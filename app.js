@@ -72,13 +72,13 @@ function showPost(postObject) {
 
     // called when delete button is clicked
     function deleteClicked() {
-        console.log("Update button clicked");
+        console.log("Delete button clicked");
         // to do
     }
 
     // called when update button is clicked
     function updateClicked() {
-        console.log("Delete button clicked");
+        console.log("Update button clicked");
         // to do
     }
 }
