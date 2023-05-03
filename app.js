@@ -1,7 +1,7 @@
 "use strict";
 
 // ============== global variables ============== //
-const endpoint = "";
+const endpoint = "https://post-rest-api-default-rtdb.firebaseio.com/";
 let posts;
 
 // ============== load and init app ============== //
@@ -12,15 +12,28 @@ function initApp() {
     updatePostsGrid(); // update the grid of posts: get and show all posts
 
     // event listener
-    document
-        .querySelector("#btn-create-post")
-        .addEventListener("click", showCreatePostDialog);
+    document.querySelector("#btn-create-post").addEventListener("click", showCreatePostDialog);
+    document.querySelector("#btn-cancel").addEventListener("click", closeCreatePostDialog);
+    document.querySelector("#form-create-post").addEventListener("submit", createPostClicked);
 }
 
 // ============== events ============== //
 
+function createPostClicked(event) {
+    const form = event.target;
+    const title = form.title.value;
+    const body = form.body.value;
+    const image = form.image.value;
+    createPost(title, body, image);
+}
+
+function closeCreatePostDialog() {
+    document.querySelector("#dialog-create-post").close();
+}
+
 function showCreatePostDialog() {
     console.log("Create New Post clicked!");
+    document.querySelector("#dialog-create-post").showModal();
 }
 
 // todo
@@ -29,6 +42,7 @@ function showCreatePostDialog() {
 
 async function updatePostsGrid() {
     posts = await getPosts(); // get posts from rest endpoint and save in global variable
+    console.log(posts);
     showPosts(posts); // show all posts (append to the DOM) with posts as argument
 }
 
@@ -63,33 +77,39 @@ function showPost(postObject) {
     document.querySelector("#posts").insertAdjacentHTML("beforeend", html); // append html to the DOM - section#posts
 
     // add event listeners to .btn-delete and .btn-update
-    document
-        .querySelector("#posts article:last-child .btn-delete")
-        .addEventListener("click", deleteClicked);
-    document
-        .querySelector("#posts article:last-child .btn-update")
-        .addEventListener("click", updateClicked);
+    document.querySelector("#posts article:last-child .btn-delete").addEventListener("click", deleteClicked);
+    document.querySelector("#posts article:last-child .btn-update").addEventListener("click", updateClicked);
 
     // called when delete button is clicked
     function deleteClicked() {
         console.log("Delete button clicked");
         // to do
+        console.log(postObject);
     }
 
     // called when update button is clicked
     function updateClicked() {
         console.log("Update button clicked");
         // to do
+        console.log(postObject);
     }
 }
 
 // Create a new post - HTTP Method: POST
 async function createPost(title, body, image) {
     // create new post object
+    const newPost = { title: title, body: body, image: image };
+    console.log(newPost);
     // convert the JS object to JSON string
+    const json = JSON.stringify(newPost);
+    console.log(json);
     // POST fetch request with JSON in the body
+    const response = await fetch(`${endpoint}/posts.json`, { method: "POST", body: json });
     // check if response is ok - if the response is successful
-    // update the post grid to display all posts and the new post
+    if (response.ok) {
+        // update the post grid to display all posts and the new post
+        await updatePostsGrid();
+    }
 }
 
 // Update an existing post - HTTP Method: DELETE
